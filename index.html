@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synthèses SINF</title>
+    <title>Synthèses SINF - Arthvrr</title>
     <link rel="icon" type="image/png" href="icon/icon.ico">
     
     <style>
-        /* --- CONFIGURATION DES COULEURS ET POLICE --- */
+        /* --- CONFIGURATION --- */
         :root {
-            --primary: #2563eb;       /* Bleu principal */
-            --bg-body: #f8fafc;       /* Fond de page très clair */
-            --bg-card: #ffffff;       /* Fond des cartes */
-            --text-main: #1e293b;     /* Texte principal */
-            --text-muted: #64748b;    /* Texte secondaire */
-            --border: #e2e8f0;        /* Bordures subtiles */
+            --primary: #2563eb;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            
+            /* Couleurs des badges */
+            --q1-bg: #fff7ed; --q1-text: #c2410c; /* Orange */
+            --q2-bg: #f0fdf4; --q2-text: #15803d; /* Vert */
         }
 
-        /* --- RESET DE BASE --- */
+        /* --- RESET --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -28,40 +32,58 @@
         }
 
         /* --- LAYOUT --- */
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1000px; margin: 0 auto; }
 
         /* --- HEADER --- */
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-top: 20px;
-        }
+        header { text-align: center; margin-bottom: 30px; padding-top: 20px; }
         h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--text-main); }
-        p.subtitle { color: var(--text-muted); font-size: 1.1rem; }
+        p.subtitle { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 20px; }
 
-        /* --- BARRE DE RECHERCHE --- */
-        .search-box {
-            margin: 30px auto;
-            max-width: 500px;
+        /* --- ZONE DE RECHERCHE ET FILTRES --- */
+        .controls-area {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+            margin-bottom: 40px;
         }
+
+        .search-box { margin-bottom: 15px; }
         input[type="text"] {
             width: 100%;
             padding: 12px 20px;
             border: 2px solid var(--border);
             border-radius: 8px;
             font-size: 1rem;
-            transition: border-color 0.3s;
             outline: none;
+            transition: border-color 0.2s;
         }
         input[type="text"]:focus { border-color: var(--primary); }
 
-        /* --- SECTIONS (ANNÉES) --- */
+        /* Grille pour les 4 filtres */
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: #fff;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            cursor: pointer;
+            text-overflow: ellipsis;
+        }
+
+        /* --- TITRES DE SECTIONS --- */
         .year-section { margin-bottom: 40px; }
         .year-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: var(--primary);
             border-bottom: 2px solid var(--border);
             padding-bottom: 10px;
@@ -69,42 +91,137 @@
             font-weight: 600;
         }
 
-        /* --- LISTE DES COURS --- */
+        /* --- GRILLE DES COURS --- */
         .course-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
 
+        /* --- CARTE DU COURS --- */
         .course-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 15px 20px;
+            border-radius: 10px;
+            padding: 20px;
             text-decoration: none;
             color: var(--text-main);
             transition: transform 0.2s, box-shadow 0.2s;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
+            position: relative;
         }
 
         .course-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
             border-color: var(--primary);
         }
 
-        .course-name { font-weight: 500; }
-        .icon-download { color: var(--text-muted); font-size: 0.9rem; }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
 
-        /* --- FILTRE VIDE --- */
+        .course-code {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        /* Styles spécifiques pour les badges Q1/Q2 */
+        .quad-badge {
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+        .quad-badge.q1 { background: var(--q1-bg); color: var(--q1-text); border: 1px solid #fed7aa; }
+        .quad-badge.q2 { background: var(--q2-bg); color: var(--q2-text); border: 1px solid #bbf7d0; }
+
+        .course-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .prof-name {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .year-tag {
+            background: #f1f5f9;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .download-row {
+            margin-top: auto;
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
         .hidden { display: none !important; }
-        
-        /* --- RESPONSIVE --- */
-        @media (max-width: 600px) {
-            h1 { font-size: 2rem; }
-            .course-list { grid-template-columns: 1fr; }
+
+        /* --- FOOTER & LEGAL --- */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 30px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+        footer a { color: var(--primary); text-decoration: none; }
+
+        /* Style pour le disclaimer */
+        .legal-section {
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: 25px;
+            font-size: 0.85rem;
+            color: #475569;
+            margin-top: 20px;
+            margin-bottom: 50px;
+            border: 1px solid var(--border);
+        }
+
+        .legal-section h3 {
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .legal-section ul {
+            list-style-position: inside;
+            padding-left: 5px;
+        }
+
+        .legal-section li {
+            margin-bottom: 8px;
+        }
+
+        .legal-section strong {
+            color: #334155;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -114,120 +231,220 @@
     <header>
         <h1>Mes Synthèses</h1>
         <p class="subtitle">Sciences informatiques (SINF) - UCLouvain</p>
-        
-        <div class="search-box">
-            <input type="text" id="search" placeholder="Rechercher un cours (ex: LINFO1103)..." onkeyup="filterCourses()">
-        </div>
     </header>
 
-    <div class="year-section" id="bac1">
-        <h2 class="year-title">BAC1 - Première année - SINF11BA</h2>
-        <div class="course-list">
-            <a href="SINF11BA/Synthèse LINFO1103.pdf" class="course-card" target="_blank">
-                <span class="course-name">LINFO1103</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-            <a href="SINF11BA/Synthèse LINFO1140 - Partie Digitale.pdf" class="course-card" target="_blank">
-                <span class="course-name">LINFO1140 - Digitale</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-            <a href="SINF11BA/Synthèse LESPO1122C.pdf" class="course-card" target="_blank">
-                <span class="course-name">LESPO1122C</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
+    <div class="controls-area">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Rechercher un cours, un prof, une année..." oninput="updateView()">
+        </div>
+        <div class="filters">
+            <select id="catFilter" onchange="updateView()">
+                <option value="all">Toutes les promotions</option>
+            </select>
+            
+            <select id="profFilter" onchange="updateView()">
+                <option value="all">Tous les professeurs</option>
+            </select>
+            
+            <select id="yearFilter" onchange="updateView()">
+                <option value="all">Toutes les années acad.</option>
+            </select>
+            
+            <select id="quadFilter" onchange="updateView()">
+                <option value="all">Tous les quadrimestres</option>
+            </select>
         </div>
     </div>
 
-    <div class="year-section" id="bac2">
-        <h2 class="year-title">BAC2 - Deuxième année - SINF12BA</h2>
-        <div class="course-list">
-            <a href="SINF12BA/Synthèse LINFO1114.pdf" class="course-card" target="_blank">
-                <span class="course-name">LINFO1114</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-            <a href="SINF12BA/Synthèse LINFO1113.pdf" class="course-card" target="_blank">
-                <span class="course-name">LINFO1113</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-            <a href="SINF12BA/Synthèse LINFO1104.pdf" class="course-card" target="_blank">
-                <span class="course-name">LINFO1104</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-            <a href="SINF12BA/Synthèse LINFO1123.pdf" class="course-card" target="_blank">
-                <span class="course-name">LINFO1123</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-            <a href="SINF12BA/Synthèse LEPL1402.pdf" class="course-card" target="_blank">
-                <span class="course-name">LEPL1402</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-        </div>
+    <div id="contentArea"></div>
+
+    <div class="legal-section">
+        <h3>Usage Policy for Summaries</h3>
+        <p style="margin-bottom: 15px;">These summaries are provided freely to assist students and others interested in the topics covered. By downloading or using these summaries, you agree to the following terms:</p>
+        
+        <ul>
+            <li><strong>Free Use and Download:</strong> The summaries are free to download and use for personal, non-commercial purposes.</li>
+            <li><strong>Prohibition of Resale or Redistribution:</strong> You are not permitted to sell these summaries or redistribute them under any circumstances. Republishing these summaries under any name other than the author’s original name is strictly forbidden.</li>
+            <li><strong>Attribution:</strong> If you share or reference these summaries in any capacity, proper attribution to the original author (me) is required.</li>
+            <li><strong>Respect for Intellectual Property:</strong> These summaries represent significant effort and intellectual property. By respecting these terms, you help maintain the spirit of academic integrity and collaboration.</li>
+        </ul>
+
+        <p style="margin-top: 15px;">If you have questions or wish to seek permissions beyond the scope of this policy, feel free to contact me.</p>
+        <p><em>Thank you for your understanding and cooperation.</em></p>
     </div>
 
-    <div class="year-section" id="bac3">
-        <h2 class="year-title">BAC3 - Troisième année - SINF13BA</h2>
-        <div class="course-list">
-            <a href="SINF13BA/Synthèse LINFO1361.pdf" class="course-card" target="_blank">
-                <span class="course-name">LINFO1361</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-            <a href="SINF13BA/Synthèse LELEC1930.pdf" class="course-card" target="_blank">
-                <span class="course-name">LELEC1930</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-        </div>
-    </div>
-
-    <div class="year-section" id="mineure">
-        <h2 class="year-title">Mineure Approfondissement en Informatique - APPSINF</h2>
-        <div class="course-list">
-            <a href="APPSINF/Synthèse LINFO1122.pdf" class="course-card" target="_blank">
-                <span class="course-name">LINFO1122</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-            <a href="APPSINF/Synthèse LINFO1131.pdf" class="course-card" target="_blank">
-                <span class="course-name">LINFO1131</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-            <a href="APPSINF/Synthèse LSINC1114.pdf" class="course-card" target="_blank">
-                <span class="course-name">LSINC1114</span>
-                <span class="icon-download">⬇ PDF</span>
-            </a>
-        </div>
-    </div>
-
-    <footer style="text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.9rem;">
-        <p><a href="https://github.com/Arthvrr/Summaries-UCLouvain" style="text-decoration: none;">GitHub</a></p>
+    <footer>
+        <p><a href="https://github.com/Arthvrr/Summaries-UCLouvain">GitHub</a></p>
     </footer>
+
 </div>
 
 <script>
-    function filterCourses() {
-        const input = document.getElementById('search');
-        const filter = input.value.toUpperCase();
-        // On récupère toutes les cartes de cours
-        const cards = document.querySelectorAll('.course-card');
-        const sections = document.querySelectorAll('.year-section');
+    // ===============================================================
+    // CONFIGURATION DES COURS
+    // ===============================================================
+    const courses = [
+        // --- BAC 1 ---
+        { code: "LINFO1103", name: "Introduction à l'algorithmique", prof: "Pierre Dupont", quad: "Q2", cat: "BAC1", année:"2021-2022", path: "SINF11BA/Synthèse LINFO1103.pdf" },
+        { code: "LINFO1140", name: "Électronique de l'Informatique - Partie Digitale", prof: "Jean-Didier Legat", quad: "Q2", cat: "BAC1", année:"2021-2022", path: "SINF11BA/Synthèse LINFO1140 - Partie Digitale.pdf" },
+        { code: "LESPO1122C", name: "Fondement de Droit Public & Privé", prof: "Pierre Bazier", quad: "Q2", cat: "BAC1", année:"2021-2022", path: "SINF11BA/Synthèse LESPO1122C.pdf" },
 
-        cards.forEach(card => {
-            const txtValue = card.textContent || card.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                card.classList.remove('hidden');
-            } else {
-                card.classList.add('hidden');
-            }
+        // --- BAC 2 ---
+        { code: "LINFO1114", name: "Mathématiques discrètes", prof: "Marco Saerens", quad: "Q1", cat: "BAC2", année:"2023-2024", path: "SINF12BA/Synthèse LINFO1114.pdf" },
+        { code: "LINFO1113", name: "Algorithmique Numérique", prof: "Loïc Quertenmont", quad: "Q2", cat: "BAC2", année:"2022-2023", path: "SINF12BA/Synthèse LINFO1113.pdf" },
+        { code: "LINFO1104", name: "Concepts, Paradigmes et Sémantiques des Langages de Programmation", prof: "Peter Van Roy", quad: "Q2", cat: "BAC2", année:"2023-2024", path: "SINF12BA/Synthèse LINFO1104.pdf" },
+        { code: "LINFO1123", name: "Calculabilité, logique et complexité", prof: "Yves Deville", quad: "Q2", cat: "BAC2", année:"2022-2023", path: "SINF12BA/Synthèse LINFO1123.pdf" },
+        { code: "LEPL1402", name: "Informatique 2", prof: "Pierre Schaus", quad: "Q1", cat: "BAC2", année:"2022-2023", path: "SINF12BA/Synthèse LEPL1402.pdf" },
+
+        // --- BAC 3 ---
+        { code: "LINFO1361", name: "Intelligence Artificielle", prof: "Éric Piette", quad: "Q2", cat: "BAC3", année:"2023-2024", path: "SINF13BA/Synthèse LINFO1361.pdf" },
+        { code: "LELEC1930", name: "Introduction aux Télécommunications", prof: "Jérome Louveaux", quad: "Q2", cat: "BAC3", année:"2024-2025", path: "SINF13BA/Synthèse LELEC1930.pdf" },
+
+        // --- MINEURE ---
+        { code: "LINFO1122", name: "Méthode de Conception Programme", prof: "Charles Pecheur", quad: "Q1", cat: "Mineure", année:"2023-2024", path: "APPSINF/Synthèse LINFO1122.pdf" },
+        { code: "LINFO1131", name: "Concurrent Programming Concepts", prof: "Peter Van Roy", quad: "Q1", cat: "Mineure", année:"2023-2024", path: "APPSINF/Synthèse LINFO1131.pdf" },
+        { code: "LSINC1114", name: "Analyse de Données Biologiques", prof: "Sébastien Jodogne", quad: "Q1", cat: "Mineure", année:"2024-2025", path: "APPSINF/Synthèse LSINC1114.pdf" }
+    ];
+
+    // ===============================================================
+    // LOGIQUE DU SITE
+    // ===============================================================
+
+    const categories = {
+        "BAC1": "BAC1 - Première année - SINF11BA",
+        "BAC2": "BAC2 - Deuxième année - SINF12BA",
+        "BAC3": "BAC3 - Troisième année - SINF13BA",
+        "Mineure": "Mineure Approfondissement - APPSINF"
+    };
+
+    function init() {
+        populateFilters();
+        updateView();
+    }
+
+    function populateFilters() {
+        // --- 1. Filtre Promotion (Catégorie) ---
+        const catSelect = document.getElementById('catFilter');
+        // On utilise les clés de l'objet categories
+        for (const [key, label] of Object.entries(categories)) {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = label;
+            catSelect.appendChild(opt);
+        }
+
+        // --- 2. Filtre Profs ---
+        const profs = [...new Set(courses.map(c => c.prof))].sort();
+        const profSelect = document.getElementById('profFilter');
+        profs.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p; opt.innerText = p; profSelect.appendChild(opt);
         });
 
-        // Masquer les sections vides si on recherche un truc précis
-        sections.forEach(section => {
-            const visibleCards = section.querySelectorAll('.course-card:not(.hidden)');
-            if(visibleCards.length === 0) {
-                section.style.display = 'none';
-            } else {
-                section.style.display = 'block';
-            }
+        // --- 3. Filtre Année Académique ---
+        const years = [...new Set(courses.map(c => c.année))].sort().reverse();
+        const yearSelect = document.getElementById('yearFilter');
+        years.forEach(y => {
+            const opt = document.createElement('option');
+            opt.value = y; opt.innerText = y; yearSelect.appendChild(opt);
+        });
+
+        // --- 4. Filtre Quad ---
+        const quads = [...new Set(courses.map(c => c.quad))].sort();
+        const quadSelect = document.getElementById('quadFilter');
+        quads.forEach(q => {
+            const opt = document.createElement('option');
+            opt.value = q; opt.innerText = q; quadSelect.appendChild(opt);
         });
     }
+
+    function updateView() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        
+        // Récupération des valeurs des 4 filtres
+        const catFilter = document.getElementById('catFilter').value;
+        const profFilter = document.getElementById('profFilter').value;
+        const yearFilter = document.getElementById('yearFilter').value;
+        const quadFilter = document.getElementById('quadFilter').value;
+        
+        const container = document.getElementById('contentArea');
+        container.innerHTML = "";
+
+        // Filtrage global
+        const filtered = courses.filter(c => {
+            // Recherche texte
+            const matchSearch = c.code.toLowerCase().includes(search) || 
+                                c.name.toLowerCase().includes(search) ||
+                                c.prof.toLowerCase().includes(search) ||
+                                c.année.toLowerCase().includes(search);
+            
+            // Correspondance des sélecteurs
+            const matchCat = catFilter === "all" || c.cat === catFilter;
+            const matchProf = profFilter === "all" || c.prof === profFilter;
+            const matchYear = yearFilter === "all" || c.année === yearFilter;
+            const matchQuad = quadFilter === "all" || c.quad === quadFilter;
+
+            return matchSearch && matchCat && matchProf && matchYear && matchQuad;
+        });
+
+        // Groupement par catégorie pour l'affichage
+        const groups = {};
+        filtered.forEach(c => {
+            if (!groups[c.cat]) groups[c.cat] = [];
+            groups[c.cat].push(c);
+        });
+
+        // Génération HTML
+        for (const [catCode, catLabel] of Object.entries(categories)) {
+            // On affiche la section seulement s'il y a des cours dedans après filtrage
+            if (groups[catCode] && groups[catCode].length > 0) {
+                const section = document.createElement('div');
+                section.className = "year-section";
+                
+                const title = document.createElement('h2');
+                title.className = "year-title";
+                title.innerText = catLabel;
+                section.appendChild(title);
+
+                const list = document.createElement('div');
+                list.className = "course-list";
+
+                groups[catCode].forEach(course => {
+                    const card = document.createElement('a');
+                    card.href = course.path;
+                    card.target = "_blank";
+                    card.className = "course-card";
+                    
+                    const quadClass = course.quad === 'Q1' ? 'q1' : 'q2';
+
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <span class="course-code">${course.code}</span>
+                            <span class="quad-badge ${quadClass}">${course.quad}</span>
+                        </div>
+                        <div class="course-title">${course.name}</div>
+                        <div class="prof-name">
+                            <span>👨‍🏫 ${course.prof}</span>
+                            <span class="year-tag">${course.année}</span>
+                        </div>
+                        <div class="download-row">
+                            <span>Télécharger PDF</span>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+
+                section.appendChild(list);
+                container.appendChild(section);
+            }
+        }
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:#64748b; margin-top:40px;">Aucun cours ne correspond à votre recherche.</div>`;
+        }
+    }
+
+    init();
 </script>
 
 </body>
