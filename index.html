@@ -19,6 +19,9 @@
             /* Couleurs des badges */
             --q1-bg: #fff7ed; --q1-text: #c2410c; /* Orange */
             --q2-bg: #f0fdf4; --q2-text: #15803d; /* Vert */
+            
+            /* Couleur badge IA */
+            --ai-bg: #f3e8ff; --ai-text: #7e22ce; /* Violet */
         }
 
         /* --- RESET --- */
@@ -124,6 +127,13 @@
             align-items: flex-start;
             margin-bottom: 10px;
         }
+        
+        /* Conteneur pour aligner les badges à droite */
+        .badges-wrapper {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
 
         .course-code {
             font-weight: 700;
@@ -131,15 +141,28 @@
             color: var(--primary);
         }
 
-        /* Styles spécifiques pour les badges Q1/Q2 */
-        .quad-badge {
+        /* Styles spécifiques pour les badges */
+        .badge {
             font-size: 0.75rem;
             padding: 2px 10px;
             border-radius: 12px;
             font-weight: 700;
+            white-space: nowrap;
         }
+        
+        /* Badges Q1/Q2 */
         .quad-badge.q1 { background: var(--q1-bg); color: var(--q1-text); border: 1px solid #fed7aa; }
         .quad-badge.q2 { background: var(--q2-bg); color: var(--q2-text); border: 1px solid #bbf7d0; }
+
+        /* Badge IA */
+        .ai-badge { 
+            background: var(--ai-bg); 
+            color: var(--ai-text); 
+            border: 1px solid #d8b4fe; 
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
 
         .course-title {
             font-weight: 600;
@@ -303,7 +326,14 @@
         // --- MINEURE ---
         { code: "LINFO1122", name: "Méthode de Conception Programme", prof: "Charles Pecheur", quad: "Q1", cat: "Mineure", année:"2023-2024", path: "APPSINF/Synthèse LINFO1122.pdf" },
         { code: "LINFO1131", name: "Concurrent Programming Concepts", prof: "Peter Van Roy", quad: "Q1", cat: "Mineure", année:"2023-2024", path: "APPSINF/Synthèse LINFO1131.pdf" },
-        { code: "LSINC1114", name: "Analyse de Données Biologiques", prof: "Sébastien Jodogne", quad: "Q1", cat: "Mineure", année:"2024-2025", path: "APPSINF/Synthèse LSINC1114.pdf" }
+        { code: "LSINC1114", name: "Analyse de Données Biologiques", prof: "Sébastien Jodogne", quad: "Q1", cat: "Mineure", année:"2024-2025", path: "APPSINF/Synthèse LSINC1114.pdf" },
+    
+        // --- MASTER 1 - TRONC COMMUN ---
+        { code: "LINFO2241", name: "Architecture & Performance of Computer Systems", prof: "Tom Barbette", quad: "Q1", cat: "SINF2M", année:"2025-2026", path: "SINF2M/Synthèse LINFO2241 NotebookLLM.pdf",faitAvecIA:"oui" },
+        
+        // --- MASTER 1 - OPTION AI ---
+        { code: "LINFO2266", name: "Advanced Algorithms for Optimization", prof: "Pierre Schaus", quad: "Q1", cat: "SINF2M - AI", année:"2025-2026", path: "SINF2M - AI/Synthèse LINFO2266 NotebookLLM.pdf", faitAvecIA:"oui"},
+        { code: "LINFO2263", name: "Computational Linguistics", prof: "Pierre Dupont", quad: "Q1", cat: "SINF2M - AI", année:"2025-2026", path: "SINF2M - AI/Synthèse LINFO2263 NotebookLLM.pdf", faitAvecIA:"oui"},
     ];
 
     // ===============================================================
@@ -314,7 +344,9 @@
         "BAC1": "BAC1 - Première année - SINF11BA",
         "BAC2": "BAC2 - Deuxième année - SINF12BA",
         "BAC3": "BAC3 - Troisième année - SINF13BA",
-        "Mineure": "Mineure Approfondissement - APPSINF"
+        "Mineure": "Mineure Approfondissement - APPSINF",
+        "SINF2M" : "Master en Sciences Informatiques - Tronc Commun",
+        "SINF2M - AI" : "Master en Sciences Informatiques - Option Intelligence Artificielle"
     };
 
     function init() {
@@ -325,7 +357,6 @@
     function populateFilters() {
         // --- 1. Filtre Promotion (Catégorie) ---
         const catSelect = document.getElementById('catFilter');
-        // On utilise les clés de l'objet categories
         for (const [key, label] of Object.entries(categories)) {
             const opt = document.createElement('option');
             opt.value = key;
@@ -372,13 +403,11 @@
 
         // Filtrage global
         const filtered = courses.filter(c => {
-            // Recherche texte
             const matchSearch = c.code.toLowerCase().includes(search) || 
                                 c.name.toLowerCase().includes(search) ||
                                 c.prof.toLowerCase().includes(search) ||
                                 c.année.toLowerCase().includes(search);
             
-            // Correspondance des sélecteurs
             const matchCat = catFilter === "all" || c.cat === catFilter;
             const matchProf = profFilter === "all" || c.prof === profFilter;
             const matchYear = yearFilter === "all" || c.année === yearFilter;
@@ -387,7 +416,7 @@
             return matchSearch && matchCat && matchProf && matchYear && matchQuad;
         });
 
-        // Groupement par catégorie pour l'affichage
+        // Groupement par catégorie
         const groups = {};
         filtered.forEach(c => {
             if (!groups[c.cat]) groups[c.cat] = [];
@@ -396,7 +425,6 @@
 
         // Génération HTML
         for (const [catCode, catLabel] of Object.entries(categories)) {
-            // On affiche la section seulement s'il y a des cours dedans après filtrage
             if (groups[catCode] && groups[catCode].length > 0) {
                 const section = document.createElement('div');
                 section.className = "year-section";
@@ -417,10 +445,19 @@
                     
                     const quadClass = course.quad === 'Q1' ? 'q1' : 'q2';
 
+                    // Logique pour le badge IA
+                    let aiBadgeHtml = '';
+                    if (course.faitAvecIA === "oui") {
+                        aiBadgeHtml = `<span class="badge ai-badge" title="Synthèse générée à l'aide de l'IA">🤖 IA</span>`;
+                    }
+
                     card.innerHTML = `
                         <div class="card-header">
                             <span class="course-code">${course.code}</span>
-                            <span class="quad-badge ${quadClass}">${course.quad}</span>
+                            <div class="badges-wrapper">
+                                ${aiBadgeHtml}
+                                <span class="badge quad-badge ${quadClass}">${course.quad}</span>
+                            </div>
                         </div>
                         <div class="course-title">${course.name}</div>
                         <div class="prof-name">
